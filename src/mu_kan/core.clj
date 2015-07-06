@@ -32,17 +32,17 @@
     ((f (lvar c)) [env (inc c)])))
 
 (defn mplus [s1 s2]
+  (println :mplus s1 s2)
   (cond
-    (not s1) s2
-    (fn? s1) (fn [] (mplus s2 (s1)))
+    (not (seq s1)) s2
+    (fn? s1) (fn [] (mplus s2 (s1))) ;; immature streams
     :otherwise (cons (first s1) (mplus (rest s1) s2))))
 
 (defn bind [s g]
-  (cond (not s) mzero
-        (fn? s) (fn [] (bind (s) g))
-        :otherwise (mplus (g (first s)) (bind (rest s) g))))
+  (cond (not (seq s)) mzero
+        (fn? s) (fn [] (bind (s) g)) ;; immature streams
+        :otherwise (mplus (cons (first s)) (bind (rest s) g))))
 
 (defn conj [g1 g2] (fn [state] (bind (g1 state) g2)))
 (defn disj [g1 g2] (fn [state] (mplus (g1 state) (g2 state))))
-
 
