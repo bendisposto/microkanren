@@ -41,7 +41,7 @@
 (defn bind [s g]
   (cond (not (seq s)) mzero
         (fn? s) (fn [] (bind (s) g)) ;; immature streams
-        :otherwise (mplus (cons (first s)) (bind (rest s) g))))
+        :otherwise (mplus (g (first s)) (bind (rest s) g))))
 
 (defn conj [g1 g2] (fn [state] (bind (g1 state) g2)))
 (defn disj [g1 g2] (fn [state] (mplus (g1 state) (g2 state))))
